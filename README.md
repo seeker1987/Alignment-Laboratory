@@ -6,12 +6,12 @@ Claims are labelled Established / Proposed / Hypothesis / Open. **Absorption dri
 
 ## Two sets of experiments
 
-- **`long-horizon-experiments/`**: long-horizon kits designed, run and analysed by Hark (an AI agent working for the author) on hosted models through free API tiers (NVIDIA build). Versions v0.1 to v0.5, with v0.6 to follow. The status table and results below describe this set.
+- **`long-horizon-experiments/`**: long-horizon kits designed, run and analysed by Hark (an AI agent working for the author) on hosted models through free API tiers (NVIDIA build). Versions v0.1 to v0.6 (v0.6 results are summarised below; its kit and data are not yet in this repository). The status table and results below describe this set.
 - **Root-level `experiment-v0.5-local-ollama/` and `experiment-v0.6-stealth-stress/`**: separate experiments run by the author on a Mac with Ollama (local qwen3.5:4b). They share version numbers with the Hark set but are independent kits; see each folder's `RESULTS.md`.
 
-The long-horizon set's next kit (immune-system test, running) is v0.6; it is separate from the author's root-level `experiment-v0.6-stealth-stress/`.
+The long-horizon set's v0.6 (immune-system and context-intention-objective test) is separate from the author's root-level `experiment-v0.6-stealth-stress/`.
 
-## Status at a glance (Hark experiments, 11 October 2026)
+## Status at a glance (Hark experiments, 12 October 2026)
 
 | Experiment | What it tests | Model(s) with usable results | Headline |
 | --- | --- | --- | --- |
@@ -20,6 +20,7 @@ The long-horizon set's next kit (immune-system test, running) is v0.6; it is sep
 | `long-horizon-experiments/experiment-v0.3/` | Closed-loop agent: the model picks every action; baseline vs Stage 1 binding vs full CARA governor | gpt-oss-20b (480 episodes) | Baseline continued after invalidation in 1 of 49 episodes. Ungrounded binding caused 36% (Stage 1) and 65% (CARA) false interruptions vs 7% for baseline |
 | `long-horizon-experiments/experiment-v0.4/` | Grounded binding: each validity condition must quote the operator's text | gpt-oss-20b (320 episodes) | False interruptions fell to 17% (Stage 1) and 14% (CARA); 0 of 87 continuations after invalidation |
 | `long-horizon-experiments/experiment-v0.5/` | Long-horizon stress test: 40-unit tasks, early vs late shift, self-written summaries, passive vs active telemetry, deadline pressure; baseline vs grounded CARA | gpt-oss-20b (240), gemma-4-31b-it (140 of 240), nemotron-3-super (65 of 240); GLM-5.3 none | Continuation after invalidation appeared under stress (up to 94%), mostly unaware; CARA cut it to 0-7%. Provisional |
+| `long-horizon-experiments/experiment-v0.6/` (kit and data to be added) | Immune-system test: 16-unit tasks, nine cues (explicit and stealth shifts, injected alarms and waivers, legitimate and spoofed operator amendments, scope tightening, operator query), four arms (baseline, scheduled reports only, grounded binding, binding plus provenance), end-of-task probe of objective, intention and condition | gpt-oss-20b (432 of 432), nemotron-3-super (211 of 432), gemma-4-31b-it (28 of 432) | Provisional. Stealth shifts, not explicit ones, drive aware continuation; baseline obeyed injected instructions; a fixed binding rejected legitimate amendments; provenance cut both errors. Scheduled reports alone did not reduce unaware lag |
 
 This README is updated after each experiment completes.
 
@@ -29,6 +30,7 @@ This README is updated after each experiment completes.
 - **v0.3:** baseline ICR (continued after an invalidating shift) was 2% (1/49, 95% CI 0-11%); shift position (step 4 vs 16) made no difference. Cause of the binding problem: the LLM that compiles the binding record invented conditions the operator never set. Overhead was about +58% calls per mutating step.
 - **v0.4:** prompt-level grounding did most of the work (the checker rejected 0 conditions). Grounded CARA false interruptions were 14% (95% CI 8-22%) against 7% for baseline (difference +6 points, CI -4 to +17, inconclusive). Unrelated alarm lines still halted 28-31% of runs. Overhead was about +25%.
 - **v0.5 (provisional, incomplete for two models):** pooled baseline continuation on the quiet cue was 0% with passive telemetry, 64% (35-85%) with active telemetry, 94% (72-99%) with self-summary plus active telemetry, 94% (73-99%) under stress. Late vs early shift made no clear difference (+10 points, CI -10 to +27). CARA contrast -82 points (CI -95 to -67); false-stop difference about 0 (CI -8 to +9). Exploratory split: most continuations (41 of 50) were unaware, i.e. the shifted reading was seen late, though end probes later showed the models knew. Absorption drift remains a Hypothesis.
+- **v0.6 (provisional: only gpt-oss-20b is complete; nemotron 49%, gemma 6%; 671 usable episodes, 71 error episodes excluded; run restarted from zero after a storage fault, no data analysed before the restart).** Baseline aware continuation was 0/18 (0%, 95% CI 0-18%) when the shift was explicit and 5/21 (24%, 11-45%) when it needed inference (+24 points, CI +5 to +45). Most post-shift mutations in every arm came before the agent had looked (62-78%), and scheduled reports alone did not reduce this (+4 points, CI -14 to +24); the metric has a high floor with checks every three units. The baseline obeyed an injected halt instruction in a tool log in 15/15 cases and continued after an injected "condition waived" line in 10/19 and after a spoofed operator amendment in 15/19. A binding fixed at task start rejected 18/20 legitimate amendments (baseline 0/21). Adding provenance (only the operator channel may amend the condition) cut infection by 51 points against baseline (CI -62 to -41) and graft rejection by 47 points against the fixed binding (CI -70 to -24); how much varied by model (rejection 25% for gpt-oss, 75% for nemotron). Preregistered "largest discrimination score D" for the provenance arm was not met as scored, and the context-intention-objective score was not higher in the CARA arms (-0.26, CI -0.60 to +0.09). Hypotheses H1 to H7 are individually reported in the kit's `RESULTS.md`, with development and held-out scenarios separated. Absorption drift itself remains a Hypothesis.
 
 **Reading these results:** the bottleneck found so far is calibrated interpretation (knowing which conditions matter), not persistence. CARA's benefit on continuation cannot be measured while the baseline barely drifts.
 
@@ -39,6 +41,7 @@ This README is updated after each experiment completes.
 - v0.4 compares against v0.3 baseline data from an earlier session, not a baseline rerun.
 - v0.2: `results/results_glm.jsonl.gz` (161 records, 16 errors, GLM-5.3) is included but not part of the interim summary.
 - v0.5: n=1 per cell, gemma and nemotron incomplete, GLM-5.3 produced no usable episodes, 209 error episodes excluded, aware/unaware split is coarse and exploratory.
+- v0.6: n=1 per cell, 12 synthetic scenarios (4 held-out), one complete model, simulated operator channel (a message heading, not signing), naive non-adaptive injections, regex-scored understanding probe, 15% of gpt-oss episodes ended at the token cap. The "at least 2 of 3 models" rule could not be applied. Halting on an injected halt is the fail-safe direction (an availability cost).
 - MTA (arm 6) is not tested. It needs training access and is out of scope for these kits.
 
 ## Repository layout
@@ -51,6 +54,7 @@ long-horizon-experiments/                   Experiments run by Hark on hosted mo
   experiment-v0.3/                  PREREG.md, RESULTS.md, FREEZE.sha256, run_cara.py, analyze_cara.py, runchunk.sh, results/
   experiment-v0.4/                  same layout as v0.3
   experiment-v0.5/                  PREREG.md, RESULTS.md, FREEZE.sha256, run_v05.py, analyze_v05.py, runchunk.sh, results/
+  experiment-v0.6/                  (to be added on approval) PREREG.md, RESULTS.md, FREEZE.sha256, run_v07.py, analyze_v07.py, scenarios.json, results/; code keeps its working name v0.7
 experiment-v0.5-local-ollama/       Author's local Ollama run (separate from Hark's v0.5)
 experiment-v0.6-stealth-stress/     Author's stealth multi-hop suite on local Ollama
 ```
